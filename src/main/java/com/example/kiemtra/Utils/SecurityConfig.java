@@ -1,12 +1,16 @@
 package com.example.kiemtra.Utils;
 
 import com.example.kiemtra.Services.CustomUserDetailService;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,9 +43,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/assets/**", "/home/**", "/register", "/error")
+                        .requestMatchers("/css/**", "/js/**", "/assets/**", "/", "/register", "/error")
                         .permitAll()
-                        .requestMatchers("/user/edit", "/user/delete")
+                        .requestMatchers("/nhanvien/edit", "/nhanvien/delete")
                         .hasAnyAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .logout(logout -> logout.logoutUrl("/logout")
@@ -50,10 +54,21 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .permitAll())
-                .formLogin(formLogin -> formLogin.loginPage("/login")
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/nhanvien")
-                        .permitAll())
+                        .defaultSuccessUrl("/")
+                        .permitAll()
+                        .successHandler((request, response, authentication) -> {
+                            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                            if (userDetails.getAuthorities().stream()
+                                    .anyMatch(auth -> auth.getAuthority().equals("ADMIN"))) {
+                                response.sendRedirect("/nhanvien");
+                            } else {
+                                response.sendRedirect("/login");
+                            }
+                        }))
+
                 .rememberMe(rememberMe -> rememberMe.key("uniqueAndSecret")
                         .tokenValiditySeconds(86400)
                         .userDetailsService(userDetailsService()))

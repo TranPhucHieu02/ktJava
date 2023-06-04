@@ -27,6 +27,7 @@ public class AccountController {
 
     @GetMapping("/login")
     public String login(Model model, HttpSession session, Authentication authentication) {
+
         if (authentication != null && authentication.isAuthenticated()) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             session.setAttribute("infoUser", userDetails);

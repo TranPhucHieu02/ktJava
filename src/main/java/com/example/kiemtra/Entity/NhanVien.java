@@ -27,7 +27,7 @@ public class NhanVien {
     private String phai;
 
     @Column(name = "noisong")
-    @NotEmpty(message = "phai không được để trống")
+    @NotEmpty(message = "noi sống không được để trống")
     private String noisong;
 
     @Column(name = "luong")
