@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.Thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhân viên</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+</head>
+<body>
+    <th:block th:replace="layout :: header"></th:block>
+    <div class="container">
+        <h1 th:text="${title}"></h1>
+        <table class="table">
+            <tr>
+                <th>Mã NV</th>
+                <th>Họ Tên</th>
+                <th>Giới Tính</th>
+                <th>Nơi Sinh</th>
+                <th>Tên Phòng</th>
+                <th>Lương</th>
+                <th>Chức Năng</th>
+            </tr>
+            <tr th:each="nhanvien : ${nhanviens}">
+                <td th:text="${nhanvien.manv}"></td>
+                <td th:text="${nhanvien.hoten}"></td>
+                <td th:switch="${nhanvien.phai}" >
+                    <img th:case="NỮ" th:src="@{https://tse1.mm.bing.net/th?id=OIP.WvA4vo0hrqjx4yjpMD-1mgHaIh&pid=Api&P=0&h=180}" width="30" height="30">
+                    <img th:case="NAM" th:src="@{https://tse3.mm.bing.net/th?id=OIP.Kf-A4bhyw6NFAggbsk3cdwHaIU&pid=Api&P=0&h=180}" width="30" height="30">
+                </td>
+                <td th:text="${nhanvien.noisong}"></td>
+                <td th:text="${nhanvien.phongban.hoten}"></td>
+                <td th:text="${nhanvien.luong}"></td>
+                <td>
+                    <a th:href="@{/nhanvien/edit/{id}(id=${nhanvien.manv})}">Edit</a>|
+                    <a th:href="@{/nhanvien/delete/{id}(id=${nhanvien.manv})}" onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <th:block th:replace="layout :: footer"></th:block> 
+</body>
+</html>
